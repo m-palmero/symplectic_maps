@@ -1,0 +1,49 @@
+/* -----------------------------------------------------------------
+   Declare function requirements
+   ----------------------------------------------------------------- */
+void map (double *x0, double *x1, void *pars);
+void jacobian (double **J, double *x, void *pars);
+
+/* -----------------------------------------------------------------
+   The map^n
+   ----------------------------------------------------------------- */
+void
+map_n (int n, double *x, double *Tx, void *a){
+    double *x0, *x1, *xtmp;
+    x0 = vector_alloc (2);
+    vector_copy (x0, x, 2);
+    x1 = Tx;
+    for (int i=0; i<n; i++){
+	map (x0, x1, a);
+	if (isnan(x1[0]) || isnan(x1[1])) break;
+	xtmp = x0; x0 = x1; x1 = xtmp;
+    }
+    vector_copy (Tx, x0, 2);
+}
+
+/* -----------------------------------------------------------------
+   The jacobian of map T^n
+   ----------------------------------------------------------------- */
+void
+jacobian_n (double **Jn, int n, double *x, void *a){
+    int i;
+    double *x0, *x1, *xtmp, **J0, **J1, **J, **Jtmp;
+    x0 = vector_alloc (2);
+    x1 = vector_alloc (2);
+    J0 = matrix_alloc (2, 2);
+    J1 = matrix_alloc (2, 2);
+
+    vector_copy (x0, x, 2);
+    jacobian (Jn, x0, a);
+    for (i=1; i<n; i++){
+	matrix_copy (J0, Jn, 2, 2);
+	map (x0, x1, a);
+	jacobian (J1, x1, a);
+	matrix_product (Jn, J1, J0, 2, 2, 2);
+	
+	xtmp = x0; x0 = x1; x1 = xtmp;
+    }
+    /* restore values to desired location and free memory*/
+    free (x0); free (x1);
+    free (J0); free (J1);
+}

@@ -1,0 +1,28 @@
+        //double initial_conditions[] = {1.724770290893, 0.3080149418021545};
+        // Invariant spaning curve:
+        //double initial_conditions[] = {1.99963, 0.363568};
+        // Invariant island:
+        //double initial_conditions[] = {4.24029, 0.337457};
+        // Region around the cantori: 
+        //double initial_conditions[] = {1.65195, 0.236157};
+        // Around the period 7 UPO:
+
+
+//Period 1 UPO (Magnetic saddle)
+        //double initial_conditions[] = {3.8760479886142222e-16, 9.9999999999999967e-01};
+        //Period 28 UPO (Ensemble 1 on Transient Analysis)
+        //double initial_conditions[] = {-2.630556363014680e-14, 9.971293753820584e-01};
+        //Period 57 UPO (Ensemble 2 on Transient Analysis)
+        //double initial_conditions[] = {1.390380865995411e-14, 9.974541094372927e-01};
+        //Period 29 UPO (Ensemble 3 on Transient Analysis)
+        //double initial_conditions[] = {6.123834771568420e-04, 9.979545378272051e-01};
+        //Period 30 UPO (Ensemble 4 on Transient Analysis)
+        //double initial_conditions[] = {-9.515852739853789e-04, 9.978405500505392e-01};
+        //double initial_conditions[] = {0.0,  0.996148};
+        //double initial_conditions[] = {6.75584e-06,  0.997156};
+
+
+                // booz_map.x_space_min = -4e-4;
+        // booz_map.x_space_max = 4e-4;
+        // booz_map.y_space_min = 0.998697 - 1.4e-3;
+        // booz_map.y_space_max = 0.998697 + 1.4e-3;
