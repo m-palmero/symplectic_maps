@@ -13,9 +13,15 @@ void print_prog(double percentage)
 	fflush(stdout);
 }
 
-void copy (double *x, double *y, int dim)
+void copy(double *x, double *y, int dim)
 {
   for (int i=0; i<dim; i++)	x[i] = y[i];
+}
+
+void change(double *x, double a, double b)
+{
+	x[1,0] = a;
+	x[0,1] = b;
 }
 
 int alloc_1d_double(double **x, int n)
@@ -107,4 +113,3 @@ double moving_window(double *x, int n, int m)
 
 	return *x;
 }
-

@@ -1,4 +1,4 @@
-# include "dynamics.h"
+# include "symplectic_maps_analysis.h"
 
 extern char data_file1[T], data_file2[T], data_file3[T], data_file4[T];
 extern int iter;

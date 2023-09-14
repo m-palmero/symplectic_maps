@@ -1,6 +1,6 @@
 // --- Function Phase Space ---
 // Evolve an ensamble of i.c. and save a specific region of the space
-# include "dynamics.h"
+# include "symplectic_maps_analysis.h"
 
 extern char data_file1[T], data_file2[T];
 extern int iter;

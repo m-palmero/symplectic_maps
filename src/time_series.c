@@ -1,6 +1,6 @@
 // --- Function Time Series ---
 // Evolve a i.c. and save the time series evolution of a specific coodinate
-# include "dynamics.h"
+# include "symplectic_maps_analysis.h"
 
 extern char data_file1[T];
 extern int iter; 

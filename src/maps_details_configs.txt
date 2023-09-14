@@ -1,0 +1,43 @@
+if (standard_map)
+{       
+    //double initial_conditions[] = {1.69236864663, 3.141592653589786};
+    //double initial_conditions[] = {0.512345678987654, M_PI};
+    // Center island:
+    //double initial_conditions[] = {4.02196, 3.42837};
+    // Period 6 island:
+    //double initial_conditions[] = {4.76081, 3.70200};
+    // Chaotic local region
+    //double initial_conditions[] = {4.60996, 3.11897};
+    // Chaotic global region
+    //double initial_conditions[] = {0.5123, 3.1415};
+    // Intermitency
+    //double initial_conditions[] = {0.51234567899871, M_PI};
+    //double delta = 1e-14;
+    //double initial_conditions[] = {0.51234567899870, M_PI};
+    //Zoom "intermitency" region
+    //std_map.y0_min = 3.14;
+    //std_map.y0_max = 4.5;
+    //std_map.x0_min = 3.8;
+    //std_map.x0_max = 4.8;
+    //std_map.y0_min = 5.2;
+    //std_map.y0_max = 5.7;
+    //std_map.x_space_min = 3.8;
+    //std_map.x_space_max = 4.8;
+    //std_map.y_space_min = 5.2;
+    //std_map.y_space_max = 5.7;
+} 
+
+if(fermi_ulam)
+{
+            //Low RR
+        //double initial_conditions[] = {3.2202110883642980e+00, 1e-2};
+        // Chaos
+        //double initial_conditions[] = {M_PI, 1e-4};
+        // Stickiness
+        //double initial_conditions[] = {3.88005, 0.0351867};
+        // Streched island 
+        //double initial_conditions[] = {2.28586, 0.0406070};
+        // Near FISC
+        //double initial_conditions[] = {0.0, 0.065};
+}
+        

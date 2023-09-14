@@ -1,4 +1,4 @@
-# Symplecitc Maps Analysis
+# Symplectic Maps Analysis (SMA)
 
 Repository (under construction) to our codes related to the PhD research titled "Chaotic transport in symplectic maps: Applications in plasma dynamics".
 

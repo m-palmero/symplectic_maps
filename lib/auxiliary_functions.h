@@ -4,6 +4,7 @@
 
 void print_prog(double percentage);
 void copy (double *x, double *y, int dim);
+void change(double *x, double a, double b);
 int alloc_1d_double(double **x, int n);
 int alloc_2d_double(double ***x, int n, int m);
 int alloc_2d_int(int ***x, int n, int m);
