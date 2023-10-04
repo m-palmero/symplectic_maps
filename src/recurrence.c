@@ -609,15 +609,14 @@ int find_sticky_orbits(MAP *m, double ensemble_size, int iter_effect_size, doubl
     
 }
 
-
-
 int recurrence_plot(MAP *m, int iter_effect_size, double eps)
 {
     FILE *out1 = fopen(data_file1, "w");
     FILE *out2 = fopen(data_file2, "w");
+    FILE *out3 = fopen(data_file3, "w");
 
     int **rec_matrix;
-    double **orbit;
+    double orbit[iter][2];
     double aux1, aux2, dist;
     double x0[2], x1[2];
     double rec_rate;
@@ -625,89 +624,132 @@ int recurrence_plot(MAP *m, int iter_effect_size, double eps)
     x0[0] = m->x0_center;
     x0[1] = m->y0_center;
 
-    int count = 0;
-    for (int k = 0; k < iter; k++)
+    if (standard_map) 
     {
-		if (standard_map) standard_map_eqs(x0, x1, &m->parameter);
-		if (boozer_map) boozer_map_eqs(x0, x1, &m->parameter);
-		if (ullmann_map) ullmann_map_eqs(x0, x1, &m->parameter);
-        if (fermi_ulam_map) sfu_map_eqs(x0, x1, &m->parameter);
-		x0[0] = x1[0];
-		x0[1] = x1[1];
-        if (x1[1] > 1.0) break;
-        else
-        {
-            if(x1[0] <= m->x_space_max && x1[0] >= m->x_space_min 
-		    && x1[1] <= m->y_space_max && x1[1] >= m->y_space_min)
-            {
-                if (count == 0)
-                {
-                    alloc_2d_double(&orbit, 1, 2);
-                }
-                else
-                {
-                    orbit = realloc(orbit, (count + 1) * sizeof(double*));
-                    orbit[count] = malloc(2 * sizeof(double));
-                }
-                //NORMALIZATION
-			    orbit[count][0] = fabs(x0[0] - m->x_space_min) / (m->x_space_max - m->x_space_min);
-        	    orbit[count][1] = fabs(x0[1] - m->y_space_min) / (m->y_space_max - m->y_space_min);
-                count++;
-                if (count > iter_effect_size) break;
-		    }
+        alloc_2d_int(&rec_matrix, iter, iter);
+        double d_x, auxx, d_y, auxy;
+        for (int n = 0; n < iter; n++)
+	    {
+            standard_map_eqs(x0, x1, &m->parameter);
+            x0[0] = x1[0];
+            x0[1] = x1[1];
+            orbit[n][0] = x1[0];
+            orbit[n][1] = x1[1];
         }
-
-    }
-
-    alloc_2d_int(&rec_matrix, count, count);
-
-    int rec = 0;
-    for (int i = 0; i < count; i++)
-    {
-        for (int j = 0; j < count; j++)
-        {
-			aux1 = (orbit[i][0] - orbit[j][0]);
-			aux1 = aux1 * aux1;
-			aux2 = (orbit[i][1] - orbit[j][1]);
-			aux2 = aux2 * aux2;
-			dist = sqrt(aux1 + aux2);
-            if (dist < eps)
-			{
-				rec_matrix[i][j] = 1;
-				rec++;
-			}
-			else
-			{
-				rec_matrix[i][j] = 0;
-			}
-            //fprintf(out2,"\t%d\t", rec_matrix[i=j][j=i]);
-            rec_rate = (double)rec / (double)(count * count);
-            rec_rate = rec_rate * 100;
-        }
-    }
-
-    fprintf(out1, "%.7f\n", rec_rate);
-
-    int x_rp[count], y_rp[count];
-
-    for (int i = 0; i < count; i++)
-    {
-        for (int j = 0; j < count; j++)
-        {
-            if (rec_matrix[i][j] == 1)
-            {
-                x_rp[i] = i;
-                y_rp[j] = j;
-                //fprintf(out2, "%d %d %d\n", x_rp[i], y_rp[j], i);
-                if (i >= j)fprintf(out2, "%d %d %d\n", x_rp[i], y_rp[j], i);
+        int cont = 0;
+        for (int i = 0; i < iter; i++)
+        {	
+            for (int j = 0; j < iter; j++)
+            { 
+                d_x = (orbit[i][0] - orbit[j][0]);
+                if (fabs(d_x) < M_PI) auxx = d_x;
+                else if (d_x > 0) auxx = 2.0 * M_PI - d_x;
+                else auxx = 2.0 * M_PI + d_x;
+                auxx = auxx * auxx;
+                d_y = (orbit[i][1] - orbit[j][1]);
+                if (fabs(d_y) < M_PI) auxy = d_y;
+                else if (d_y > 0) auxy = 2.0 * M_PI - d_x;
+                else auxy = 2.0 * M_PI + d_x;
+                auxy = auxy * auxy;
+                dist = sqrt(auxx + auxy);
+                if (dist < eps)
+                {
+                    rec_matrix[i][j] = 1;
+                    cont++;
+                }
+                else 
+                {
+                    rec_matrix[i][j] = 0;
+                }
+                fprintf(out3,"\t%d\t", rec_matrix[i][j]);   
             }
+            fprintf(out3, "\n"); 
         }
+        dealloc_2d_int(&rec_matrix, iter);
+        //dealloc_2d_double(&orbit, iter);
     }
-
-    dealloc_2d_int(&rec_matrix, count);
-    dealloc_2d_double(&orbit, count);
     
+    // int count = 0;
+    // for (int k = 0; k < iter; k++)
+    // {
+	// 	if (boozer_map) boozer_map_eqs(x0, x1, &m->parameter);
+	// 	if (ullmann_map) ullmann_map_eqs(x0, x1, &m->parameter);
+	// 	x0[0] = x1[0];
+	// 	x0[1] = x1[1];
+    //     if (x1[1] > 1.0) break;
+    //     else
+    //     {
+    //         if(x1[0] <= m->x_space_max && x1[0] >= m->x_space_min 
+	// 	    && x1[1] <= m->y_space_max && x1[1] >= m->y_space_min)
+    //         {
+    //             if (count == 0)
+    //             {
+    //                 alloc_2d_double(&orbit, 1, 2);
+    //             }
+    //             else
+    //             {
+    //                 orbit = realloc(orbit, (count + 1) * sizeof(double*));
+    //                 orbit[count] = malloc(2 * sizeof(double));
+    //             }
+    //             //NORMALIZATION
+	// 		    orbit[count][0] = fabs(x0[0] - m->x_space_min) / (m->x_space_max - m->x_space_min);
+    //     	    orbit[count][1] = fabs(x0[1] - m->y_space_min) / (m->y_space_max - m->y_space_min);
+    //             count++;
+    //             if (count > iter_effect_size) break;
+	// 	    }
+    //     }
+
+    // }
+
+    // alloc_2d_int(&rec_matrix, count, count);
+
+    // int rec = 0;
+    // for (int i = 0; i < count; i++)
+    // {
+    //     for (int j = 0; j < count; j++)
+    //     {
+	// 		aux1 = (orbit[i][0] - orbit[j][0]);
+	// 		aux1 = aux1 * aux1;
+	// 		aux2 = (orbit[i][1] - orbit[j][1]);
+	// 		aux2 = aux2 * aux2;
+	// 		dist = sqrt(aux1 + aux2);
+    //         if (dist < eps)
+	// 		{
+	// 			rec_matrix[i][j] = 1;
+	// 			rec++;
+	// 		}
+	// 		else
+	// 		{
+	// 			rec_matrix[i][j] = 0;
+	// 		}
+    //         fprintf(out3,"\t%d\t", rec_matrix[i][j]);
+    //         rec_rate = (double)rec / (double)(count * count);
+    //         rec_rate = rec_rate * 100;
+    //     }
+    //     fprintf(out3, "\n");
+    // }
+
+    // fprintf(out1, "%.7f\n", rec_rate);
+
+    // int x_rp[count], y_rp[count];
+
+    // for (int i = 0; i < count; i++)
+    // {
+    //     for (int j = 0; j < count; j++)
+    //     {
+    //         if (rec_matrix[i][j] == 1)
+    //         {
+    //             x_rp[i] = i;
+    //             y_rp[j] = j;
+    //             //fprintf(out2, "%d %d %d\n", x_rp[i], y_rp[j], i);
+    //             if (i >= j)fprintf(out2, "%d %d %d\n", x_rp[i], y_rp[j], i);
+    //         }
+    //     }
+    // }
+
     fclose(out1);
+    fclose(out2);
+    fclose(out3);
    
     return 0;
 }

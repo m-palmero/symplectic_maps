@@ -253,7 +253,7 @@ void plot_gnuplot_time_series(char title[])
 	fclose(gp);
 }
 
-void plot_gnuplot_RP_matrix(char title[])
+void plot_gnuplot_RP_matrix(char title[],double parameter)
 {	
 	FILE *gp;
 	gp = popen(GNUPLOT, "w");
@@ -263,13 +263,19 @@ void plot_gnuplot_RP_matrix(char title[])
 	fprintf(gp, "unset key \n");
 	fprintf(gp, "unset xtics \n");
 	fprintf(gp, "unset ytics \n");
+	fprintf(gp, "unset border \n");
+	fprintf(gp, "set lmargin 0 \n");
+	fprintf(gp, "set rmargin 0 \n");
+	fprintf(gp, "set tmargin 0 \n");
+	fprintf(gp, "set bmargin 0 \n");	
 	fprintf(gp, "unset colorbox \n");
 	fprintf(gp, "set autoscale yfix \n");
 	fprintf(gp, "set autoscale xfix \n");
 	fprintf(gp, "set palette maxcolors 2\n");
 	fprintf(gp, "set palette defined (0 'white', 1 'black')\n");
-	fprintf(gp, "set output '%s.png'\n",title);
-	fprintf(gp, "plot 'recurrence_plot.dat' matrix w image\n");
+	fprintf(gp, "set output '../%s.png'\n",title);
+	fprintf(gp, "plot '%srec_matrix_%.3f.dat' matrix w image\n",data_path,parameter);
+	
 	//fprintf(gp, "pause -1");
 	fclose(gp);
 }

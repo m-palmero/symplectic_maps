@@ -8,16 +8,16 @@
 char data_file1[T], data_file2[T], data_file3[T], data_file4[T], data_file5[T], data_file6[T];
 char plot_file[T];
 char *ic_label;
-int iter = 2e4; // Number of iterations
-int nx = 1e2; // Number of initial conditions on x
-int ny = 1; // Number of initial conditions on y
+int iter = 100; // Number of iterations
+int nx = 10; // Number of initial conditions on x
+int ny = 10; // Number of initial conditions on y
 
-bool standard_map = false;
+bool standard_map = true;
 bool boozer_map = false; 
-bool ullmann_map = true;
+bool ullmann_map = false;
 bool fermi_ulam_map = false;
 
-bool phase_space_analysis = false; 
+bool phase_space_analysis = true; 
 bool escape_measure_analysis = false;
 bool recurrence_analysis = true;
 
@@ -31,8 +31,8 @@ int maps_details()
 {
     if (standard_map)
     {
-        std_map.parameter = 2.4;
-        double initial_conditions[] = {3.09680,  4.20571};
+        std_map.parameter = 1.5;
+        double initial_conditions[] = {0.5,  M_PI};
         std_map.x0_center = initial_conditions[1,0]; 
         std_map.y0_center = initial_conditions[0,1];
         std_map.y0_min = 0.0;
@@ -43,6 +43,7 @@ int maps_details()
         std_map.x_space_max = 2 * M_PI;
         std_map.y_space_min = 0.0;
         std_map.y_space_max = 2 * M_PI;
+        asprintf(&ic_label, "test");
     }
 
     if (boozer_map)
@@ -196,6 +197,12 @@ int maps_details()
 int calculate_orbit_from_ic()
 {
 
+    if (standard_map)
+    {   
+        sprintf(data_file1, "%sorbit_%.3f_%s.dat", data_path, std_map.parameter, ic_label);
+        time_series(&std_map);
+    }
+
     if (boozer_map)
     {   
         sprintf(data_file1, "%sorbit_%.7f_%s.dat", data_path, booz_map.parameter, ic_label);
@@ -215,7 +222,7 @@ int calculate_phase_spaces()
     {
         int lapis = 1; // Auxiliary for write less points
         double ic_box_size = 1e-10; // size of box of initial conitions
-        bool localized_ensemble = true; //True if you want (nx*ny) i.c. in a localized spot
+        bool localized_ensemble = false; //True if you want (nx*ny) i.c. in a localized spot
         bool normalized_phase_space = false; //True if you want (nx*ny) i.c. in a localized spo
 
         if(standard_map) 
@@ -343,8 +350,16 @@ int calculate_recurrence_plots()
     if (recurrence_analysis)
     {
         //double eps = 1e-2;
-        double eps = 0.01;
+        double eps = 0.5;
         int iter_effect_size = iter;
+
+        if(standard_map) 
+        {
+            sprintf(data_file1, "%srec_rate_%.3f.dat", data_path, std_map.parameter);
+            sprintf(data_file2, "%srec_plot_%.3f.dat", data_path, std_map.parameter);
+            sprintf(data_file3, "%srec_matrix_%.3f.dat", data_path, std_map.parameter);
+            recurrence_plot(&std_map, iter_effect_size, eps);
+        }
 
         if(boozer_map) 
         {
@@ -367,6 +382,12 @@ int plot_recurrence_plots()
 {
     if(recurrence_analysis)
     {
+        if (standard_map)
+        {
+            sprintf(plot_file, "rp_%.3f.png", std_map.parameter);
+            plot_gnuplot_RP_matrix(plot_file, std_map.parameter);
+        }
+
         if (boozer_map)
         {
             sprintf(plot_file, "rp_%.7f_%s.png", booz_map.parameter,ic_label);
@@ -491,20 +512,20 @@ int main ()
     srand(time(NULL));
     startTime = (float)clock() / CLOCKS_PER_SEC;   
 
-    maps_details();    
+    maps_details();   
+
+    //calculate_orbit_from_ic(); 
     
     //calculate_phase_spaces();
-    // // plot_phase_spaces();
-    
-    //calculate_orbit_from_ic();
+    //plot_phase_spaces();
 
     // //calculate_transient_escape_measure();
     // //plot_escape_measure();
 
-    //calculate_recurrence_plots();
-    //plot_recurrence_plots();
+    calculate_recurrence_plots();
+    plot_recurrence_plots();
 
-    calculate_recurrence_rate_ensemble();
+    //calculate_recurrence_rate_ensemble();
     //calculate_sticky_orbits();
     
     endTime = (float)clock() / CLOCKS_PER_SEC;
